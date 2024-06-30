@@ -1,6 +1,10 @@
 name: STX Swap and Telegram Notification
 
-on: [push]
+# Schedule the workflow to run every minute
+on:
+  schedule:
+    - cron: "*/1 * * * *"  # This cron expression schedules the workflow to run every minute
+  workflow_dispatch:
 
 jobs:
   run-selenium:
