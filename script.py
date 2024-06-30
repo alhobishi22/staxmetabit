@@ -103,13 +103,13 @@ try:
     should_send_message = False
 
     # تحليل واقتراح الشراء أو البيع
-    if usdt_value_from_stx > 503:  # تحقق من ربح 3$
+    if usdt_value_from_stx > 520:  # تحقق من ربح 20$
         results += "اقتراح: اشترِ STX في Velar وبيعها في MEXC لتحقيق ربح.\n"
         should_send_message = True
     else:
         results += "اقتراح: لا توجد فرصة للربح عند شراء STX في Velar وبيعها في MEXC.\n"
 
-    if aeusdc_value_from_500_usdt > 503:  # تحقق من ربح 3$
+    if aeusdc_value_from_500_usdt > 520:  # تحقق من ربح 20$
         results += "اقتراح: اشترِ STX في MEXC وبيعها في Velar لتحقيق ربح.\n"
         should_send_message = True
     else:
