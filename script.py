@@ -19,12 +19,15 @@ driver = webdriver.Chrome(service=service, options=options)
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-def get_binance_price(symbol):
-    url = f'https://api.binance.com/api/v3/ticker/price?symbol={symbol}'
+def get_mexc_price(symbol):
+    url = f'https://www.mexc.com/open/api/v2/market/ticker?symbol={symbol}'
     response = requests.get(url)
     data = response.json()
-    print(f"Response from Binance API: {data}")  # طباعة الاستجابة للتحقق
-    return float(data['price'])
+    print(f"Response from MEXC API: {data}")  # طباعة الاستجابة للتحقق
+    if 'data' in data and len(data['data']) > 0 and 'last' in data['data'][0]:
+        return float(data['data'][0]['last'])
+    else:
+        raise ValueError(f"Key 'last' not found in the response: {data}")
 
 def send_telegram_message(token, chat_id, text):
     url = f'https://api.telegram.org/bot{token}/sendMessage'
@@ -76,9 +79,9 @@ try:
     results = f'1 STX = {aeusdc_value} aeUSDC\n'
     print(results)
 
-    # أخذ سعر STX/USDT من Binance
-    stx_usdt_price = get_binance_price('STXUSDT')
-    results += f'STX/USDT price on Binance: {stx_usdt_price}\n'
+    # أخذ سعر STX/USDT من MEXC
+    stx_usdt_price = get_mexc_price('STX_USDT')
+    results += f'STX/USDT price on MEXC: {stx_usdt_price}\n'
     print(results)
 
     # حساب قيمة 500 aeUSDC مقابل STX في Velar
@@ -86,26 +89,26 @@ try:
     stx_amount_from_500_aeusdc = 500 / aeusdc_value_float
     results += f'500 aeUSDC = {stx_amount_from_500_aeusdc} STX on Velar\n'
 
-    # حساب قيمة STX الناتجة في USDT على Binance
+    # حساب قيمة STX الناتجة في USDT على MEXC
     usdt_value_from_stx = stx_amount_from_500_aeusdc * stx_usdt_price
-    results += f'{stx_amount_from_500_aeusdc} STX = {usdt_value_from_stx} USDT on Binance\n'
+    results += f'{stx_amount_from_500_aeusdc} STX = {usdt_value_from_stx} USDT on MEXC\n'
 
     # حساب قيمة 500 USDT من STX في Velar
     stx_amount_from_500_usdt = 500 / stx_usdt_price
     aeusdc_value_from_500_usdt = stx_amount_from_500_usdt * aeusdc_value_float
-    results += f'500 USDT = {stx_amount_from_500_usdt} STX on Binance\n'
+    results += f'500 USDT = {stx_amount_from_500_usdt} STX on MEXC\n'
     results += f'{stx_amount_from_500_usdt} STX = {aeusdc_value_from_500_usdt} aeUSDC on Velar\n'
 
     # تحليل واقتراح الشراء أو البيع
     if usdt_value_from_stx > 500:
-        results += "اقتراح: اشترِ STX في Velar وبيعها في Binance لتحقيق ربح.\n"
+        results += "اقتراح: اشترِ STX في Velar وبيعها في MEXC لتحقيق ربح.\n"
     else:
-        results += "اقتراح: لا توجد فرصة للربح عند شراء STX في Velar وبيعها في Binance.\n"
+        results += "اقتراح: لا توجد فرصة للربح عند شراء STX في Velar وبيعها في MEXC.\n"
 
     if aeusdc_value_from_500_usdt > 500:
-        results += "اقتراح: اشترِ STX في Binance وبيعها في Velar لتحقيق ربح.\n"
+        results += "اقتراح: اشترِ STX في MEXC وبيعها في Velar لتحقيق ربح.\n"
     else:
-        results += "اقتراح: لا توجد فرصة للربح عند شراء STX في Binance وبيعها في Velar.\n"
+        results += "اقتراح: لا توجد فرصة للربح عند شراء STX في MEXC وبيعها في Velar.\n"
 
     # إرسال النتائج إلى تليجرام
     send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, results)
