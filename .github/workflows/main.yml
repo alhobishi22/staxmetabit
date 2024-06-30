@@ -1,9 +1,9 @@
 name: STX Swap and Telegram Notification
 
-# Schedule the workflow to run every minute
+# Schedule the workflow to run every 10 minutes
 on:
   schedule:
-    - cron: "*/1 * * * *"  # This cron expression schedules the workflow to run every minute
+    - cron: "*/10 * * * *"  # This cron expression schedules the workflow to run every 10 minutes
   workflow_dispatch:
 
 jobs:
