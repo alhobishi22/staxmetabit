@@ -99,20 +99,26 @@ try:
     results += f'500 USDT = {stx_amount_from_500_usdt} STX on MEXC\n'
     results += f'{stx_amount_from_500_usdt} STX = {aeusdc_value_from_500_usdt} aeUSDC on Velar\n'
 
+    # التحقق من وجود فرصة للربح
+    should_send_message = False
+
     # تحليل واقتراح الشراء أو البيع
-    if usdt_value_from_stx > 500:
+    if usdt_value_from_stx > 503:  # تحقق من ربح 3$
         results += "اقتراح: اشترِ STX في Velar وبيعها في MEXC لتحقيق ربح.\n"
+        should_send_message = True
     else:
         results += "اقتراح: لا توجد فرصة للربح عند شراء STX في Velar وبيعها في MEXC.\n"
 
-    if aeusdc_value_from_500_usdt > 500:
+    if aeusdc_value_from_500_usdt > 503:  # تحقق من ربح 3$
         results += "اقتراح: اشترِ STX في MEXC وبيعها في Velar لتحقيق ربح.\n"
+        should_send_message = True
     else:
         results += "اقتراح: لا توجد فرصة للربح عند شراء STX في MEXC وبيعها في Velar.\n"
 
-    # إرسال النتائج إلى تليجرام
-    send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, results)
-    print("Results sent to Telegram.")
+    # إرسال النتائج إلى تليجرام فقط إذا كان هناك فرصة للربح
+    if should_send_message:
+        send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, results)
+        print("Results sent to Telegram.")
 
 finally:
     # إغلاق المتصفح
