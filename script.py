@@ -23,6 +23,7 @@ def get_binance_price(symbol):
     url = f'https://api.binance.com/api/v3/ticker/price?symbol={symbol}'
     response = requests.get(url)
     data = response.json()
+    print(f"Response from Binance API: {data}")  # طباعة الاستجابة للتحقق
     return float(data['price'])
 
 def send_telegram_message(token, chat_id, text):
@@ -34,8 +35,13 @@ def send_telegram_message(token, chat_id, text):
     requests.post(url, data=payload)
 
 try:
+    # التحقق من إعدادات WebDriver
+    driver.get('https://www.google.com')
+    print("Google page title:", driver.title)
+
     # الانتقال إلى صفحة Velar Swap
     driver.get('https://app.velar.co/swap')
+    print("Velar Swap page loaded.")
     
     # إعطاء وقت كافي لتحميل الصفحة والمحتوى الديناميكي
     time.sleep(10)
@@ -47,6 +53,7 @@ try:
     aeusdc_option = driver.find_element(By.XPATH, '//*[@id="tokenSelectionModal"]/div/div[3]/div/button[3]')
     aeusdc_option.click()
     time.sleep(5)
+    print("Currency changed to aeUSDC.")
 
     # إدخال قيمة STX ثم حذفها وإعادة إدخالها
     stx_input = driver.find_element(By.XPATH, '//*[@id="root"]/div[2]/div/div/div/div/div[2]/div[1]/div[2]/div[1]/input')
@@ -56,6 +63,7 @@ try:
     stx_input.clear()
     time.sleep(2)
     stx_input.send_keys('1')
+    print("STX value set to 1.")
 
     # إعطاء وقت كافي لتحديث السعر
     time.sleep(5)
@@ -66,10 +74,12 @@ try:
 
     # طباعة النتائج
     results = f'1 STX = {aeusdc_value} aeUSDC\n'
+    print(results)
 
     # أخذ سعر STX/USDT من Binance
     stx_usdt_price = get_binance_price('STXUSDT')
     results += f'STX/USDT price on Binance: {stx_usdt_price}\n'
+    print(results)
 
     # حساب قيمة 500 aeUSDC مقابل STX في Velar
     aeusdc_value_float = float(aeusdc_value)
@@ -99,7 +109,9 @@ try:
 
     # إرسال النتائج إلى تليجرام
     send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, results)
+    print("Results sent to Telegram.")
 
 finally:
     # إغلاق المتصفح
     driver.quit()
+    print("Browser closed.")
